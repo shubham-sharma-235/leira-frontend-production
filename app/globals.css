@@ -1,0 +1,332 @@
+@import "tailwindcss";
+
+@config "../tailwind.config.ts";
+
+/*
+  If the config file isn't picked up automatically by postcss in this specific setup,
+  the standard tailwind defaults are usually enough.
+  But linking it explicitly ensures compatibility.
+*/
+
+:root {
+  /* Space between fixed MiniNavbar (below sale strip) and page content; keep in sync with layout + hero. */
+  --leira-nav-below-gap: 0rem;
+  /* Site base background (avoid black strip under fixed nav). */
+  --background: #faf7f2;
+  --foreground: #111827;
+  --bg-gradient: #faf7f2;
+  --card: #ffffff;
+  --card-foreground: #000000;
+  --muted-foreground: #6b7280;
+  --secondary: #f3f4f6;
+  --secondary-foreground: #000000;
+  --primary: #ec4899;
+  --primary-foreground: #ffffff;
+  --border: #e5e7eb;
+  --accent: #f3f4f6;
+  --accent-foreground: #000000;
+  --muted: #f3f4f6;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+}
+
+html {
+  /* Keep mobile stable; gently lift rem-based typography on larger screens. */
+  font-size: 100%;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+@media (min-width: 640px) {
+  html {
+    font-size: 101%;
+  }
+}
+
+@media (min-width: 1024px) {
+  html {
+    font-size: 102.5%;
+  }
+}
+
+@media (min-width: 1440px) {
+  html {
+    font-size: 103%;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  transition: background 1s ease;
+  overflow-x: hidden;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Hide WhatsApp chat widget on /admin */
+body.leira-hide-wa-widget .leira-wa-widget,
+body.leira-hide-wa-widget #custom-widget-button,
+body.leira-hide-wa-widget #chat-container {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+@keyframes leira-wa-bounce {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
+.leira-wa-bounce {
+  animation: leira-wa-bounce 2s ease-in-out infinite;
+}
+
+.leira-wa-bounce:hover {
+  animation-play-state: paused;
+}
+
+/**
+ * Pull content over the root layout spacer (sale bar + mini nav + --leira-nav-below-gap) so the
+ * body's black background does not show as a strip under the fixed MiniNavbar.
+ * Matches HeroGalleryScrollAnimation — use on <main> or the page wrapper that
+ * sets the page background (white/cream).
+ */
+.leira-underlap-nav-spacer {
+  margin-top: calc(
+    -1 * (var(--leira-sale-bar-h, 0px) + var(--leira-mini-nav-h, 0px) + var(--leira-nav-below-gap))
+  );
+  padding-top: calc(
+    var(--leira-sale-bar-h, 0px) + var(--leira-mini-nav-h, 0px) + var(--leira-nav-below-gap)
+  );
+}
+
+/* Customize selection */
+::selection {
+  background-color: var(--accent-color, #f97316);
+  color: #000000;
+}
+
+/* Hide scrollbars */
+::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
+}
+
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+/* Accordion Animations */
+@keyframes accordion-down {
+  from {
+    height: 0;
+    opacity: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+    opacity: 1;
+  }
+}
+
+@keyframes accordion-up {
+  from {
+    height: var(--radix-accordion-content-height);
+    opacity: 1;
+  }
+  to {
+    height: 0;
+    opacity: 0;
+  }
+}
+
+.animate-accordion-down {
+  animation: accordion-down 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-accordion-up {
+  animation: accordion-up 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* COD marquee strip */
+@keyframes leira-marquee {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.leira-marquee {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+}
+
+.leira-marquee-track {
+  display: inline-block;
+  width: max-content;
+  will-change: transform;
+  animation: leira-marquee 12s linear infinite;
+}
+
+.leira-marquee-text {
+  display: inline-block;
+  white-space: nowrap;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .leira-marquee-track {
+    animation: none;
+  }
+}
+
+/* Blog typography consistency across all imported/admin content formats */
+/* CMS HTML: Tailwind classes inside dangerouslySetInnerHTML are often NOT in the bundle — use real CSS here. */
+/* Hero stack: thin pink rule → serif H1 → sans subtitle (matches Leira editorial reference) */
+.blog-content h1 {
+  font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif !important;
+  text-align: center !important;
+  color: #b01e5a !important;
+  font-weight: 700 !important;
+  font-size: clamp(1.9rem, 4.4vw, 2.75rem) !important;
+  line-height: 1.18 !important;
+  letter-spacing: -0.02em !important;
+  margin: 1.75rem 0 0.35rem !important;
+  padding-top: 0 !important;
+  border-top: none !important;
+}
+
+.blog-content h1::before {
+  content: "";
+  display: block;
+  width: 100%;
+  border-top: 1px solid #f0cdd9;
+  margin: 0 0 1.25rem 0;
+}
+
+/* If an <hr> is already above the hero title, don’t draw a second rule */
+.blog-content hr + h1::before {
+  display: none;
+  margin: 0;
+  border: none;
+}
+
+.blog-content hr + h1 {
+  margin-top: 0.35rem !important;
+}
+
+.blog-content h2.blog-hero-subtitle {
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+  text-align: center !important;
+  border-top: none !important;
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+  margin-bottom: 1.75rem !important;
+  color: #b01e5a !important;
+  font-size: clamp(1.2rem, 2.9vw, 1.58rem) !important;
+  font-weight: 600 !important;
+  line-height: 1.35 !important;
+  letter-spacing: -0.02em !important;
+}
+
+.blog-content h2 {
+  margin-top: 3rem !important;
+  margin-bottom: 1.25rem !important;
+  border-top: 1px solid #f0a8c6 !important;
+  padding-top: 1.75rem !important;
+  color: #8f1d58 !important;
+  font-size: clamp(1.8rem, 2.3vw, 2.35rem) !important;
+  font-weight: 600 !important;
+  line-height: 1.2 !important;
+  letter-spacing: -0.01em !important;
+}
+
+.blog-content h2:first-child {
+  border-top: none !important;
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+}
+
+.blog-content h3 {
+  margin-top: 1.9rem !important;
+  margin-bottom: 0.8rem !important;
+  color: #8f1d58 !important;
+  font-size: 1.35rem !important;
+  font-weight: 700 !important;
+  line-height: 1.35 !important;
+}
+
+.blog-content h3.tone-gold {
+  color: #b07a09 !important;
+}
+
+.blog-content hr {
+  border: 0;
+  border-top: 1px solid #f0a8c6;
+  margin: 2rem 0;
+}
+
+.blog-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  font-size: 0.9375rem;
+}
+
+.blog-content thead th,
+.blog-content th {
+  background-color: #c2185b !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  padding: 0.75rem 1rem;
+  border: 1px solid #111827;
+  text-align: left;
+}
+
+.blog-content td {
+  border: 1px solid #111827;
+  padding: 0.75rem 1rem;
+  vertical-align: top;
+  background-color: #ffffff;
+}
+
+.blog-content tbody tr:nth-child(odd) td {
+  background-color: #fdf2f8;
+}
+
+/* Numbered guide: pink step titles (paragraph + strong). Older saves may have been promoted to h3. */
+.blog-content ol > li > p:first-of-type strong {
+  color: #8f1d58 !important;
+  font-weight: 700 !important;
+  font-size: 1.06rem;
+}
+
+.blog-content ol > li > h3,
+.blog-content ol > li > h3 strong {
+  color: #8f1d58 !important;
+  font-weight: 700 !important;
+  font-size: 1.06rem !important;
+  margin-top: 0.35rem !important;
+  margin-bottom: 0.65rem !important;
+}
